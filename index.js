@@ -4,7 +4,7 @@ const socketIo = require('socket.io');
 const path = require('path');
 
 const port = process.env.PORT || 3001;
-const index = require(path.join(__dirname + '/index.html'));
+const index = require('./client/index.js');
 const app = express();
 app.use(index);
 
