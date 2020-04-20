@@ -8,6 +8,7 @@ const randomColor = () => {
 
   return `rgb(${r},${g},${b})`;
 };
+
 const drawSquare = (ctx, x, y, color) => {
   ctx.fillStyle = color;
   ctx.fillRect(x, y, 20, 20);
@@ -52,7 +53,7 @@ const App = () => {
   return (
     <div className="app">
       <canvas id="game_canvas" className="game_canvas" ref={ce.canvasRef} />
-      <button type="button" onClick={ce.running ? () => ce.stop() : () => ce.run()}>
+      <button type="button" onClick={ce.running ? ce.stop : ce.run}>
         { ce.running ? 'Stop' : 'Run' }
       </button>
     </div>
