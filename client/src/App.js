@@ -1,63 +1,75 @@
 import React, { useState, useRef } from 'react';
 import './App.css';
 
-const randomColor = () => {
-  const r = 255*Math.random()|0;
-  const g = 255*Math.random()|0;
-  const b = 255*Math.random()|0;
+const App = ({ game }) => {
+  const gameEngine = useGameEngine(game);
 
-  return `rgb(${r},${g},${b})`;
+  const runGame = () => {
+    gameEngine.run();
+  };
+
+  const stopGame = () => {
+    gameEngine.stop();
+  };
+
+  return (
+    <div className="app">
+      <canvas id="game_canvas" className="game_canvas" ref={gameEngine.canvasRef} />
+      <button type="button" onClick={gameEngine.running ? stopGame : runGame}>
+        { gameEngine.running ? 'Stop' : 'Run' }
+      </button>
+    </div>
+  );
 };
 
-const drawSquare = (ctx, x, y, color) => {
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, 20, 20);
+const useGameEngine = game => {
+  const gameRef = useRef(game);
+  const canvasEngine = useCanvasEngine({ onUpdate: game.update });
+
+  const run = () => {
+    gameRef.current.init();
+    canvasEngine.run();
+  };
+
+  const stop = () => {
+    canvasEngine.stop();
+  };
+
+  const canvasRef = () => {
+    return canvasEngine.canvasRef;
+  };
+
+  return { run, stop, running: canvasEngine.running, canvasRef: canvasRef() }
 };
 
 const useCanvasEngine = ({ onUpdate, ...props }) => {
   const framerate = props.framerate || 60;
-  const [_interval, _setInterval] = useState(0);
   const [running, setRunning] = useState(false);
+  const animationFrame = useRef(0);
+  const lastUpdatedAt = useRef(0);
   const canvasRef = useRef();
 
-  const run = () => {
-    const context = canvasRef.current.getContext('2d');
+  const animate = time => {
+    const deltaTime = time - lastUpdatedAt.current;
 
-    _setInterval(setInterval(() => onUpdate(context), 1000/framerate));
+    if (deltaTime > 1000 / framerate) {
+      onUpdate(canvasRef.current.getContext('2d'));
+      lastUpdatedAt.current = time;
+    }
+    animationFrame.current = requestAnimationFrame(animate);
+  };
+
+  const run = () => {
+    animationFrame.current = requestAnimationFrame(animate);
     setRunning(true);
   };
 
   const stop = () => {
-    if (_interval) {
-      clearInterval(_interval);
-      _setInterval(0);
-      setRunning(false);
-    }
+    cancelAnimationFrame(animationFrame.current);
+    setRunning(false);
   };
 
   return { run, stop, canvasRef, running };
-};
-
-const App = () => {
-  const ce = useCanvasEngine({
-    framerate: 1,
-    onUpdate: (ctx) => {
-      const width = ctx.canvas.width;
-      const height = ctx.canvas.height;
-
-      ctx.clearRect(0, 0, width, height);
-      drawSquare(ctx, width * Math.random(), height * Math.random(), randomColor());
-    }
-  });
-
-  return (
-    <div className="app">
-      <canvas id="game_canvas" className="game_canvas" ref={ce.canvasRef} />
-      <button type="button" onClick={ce.running ? ce.stop : ce.run}>
-        { ce.running ? 'Stop' : 'Run' }
-      </button>
-    </div>
-  );
 };
 
 export default App;
