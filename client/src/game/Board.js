@@ -22,7 +22,7 @@ const Board = ({ ..._ }) => {
     })
   };
 
-  return { tiles, init, draw };
+  return { tiles, width, height, init, draw };
 };
 
 const Tile = ({ ..._ }) => {

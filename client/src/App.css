@@ -2,7 +2,7 @@
   display: flex;
 }
 
-.game_canvas {
-  width: 500px;
-  height: 500px;
+.game_canvas_container {
+  width: 550px;
+  height: 550px;
 }

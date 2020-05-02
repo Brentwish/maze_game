@@ -2,58 +2,42 @@ import React, { useState, useRef } from 'react';
 import './App.css';
 
 const App = ({ game }) => {
-  const gameEngine = useGameEngine(game);
+  const canvasEngine = useCanvasEngine(game);
 
   const runGame = () => {
-    gameEngine.run();
+    canvasEngine.run();
   };
 
   const stopGame = () => {
-    gameEngine.stop();
+    canvasEngine.stop();
   };
 
   return (
     <div className="app">
-      <canvas id="game_canvas" className="game_canvas" ref={gameEngine.canvasRef} />
-      <button type="button" onClick={gameEngine.running ? stopGame : runGame}>
-        { gameEngine.running ? 'Stop' : 'Run' }
+      <div className="game_canvas_container">
+        <canvas id="game_canvas" ref={canvasEngine.canvasRef} />
+      </div>
+      <button type="button" onClick={canvasEngine.running ? stopGame : runGame}>
+        { canvasEngine.running ? 'Stop' : 'Run' }
       </button>
     </div>
   );
 };
 
-const useGameEngine = game => {
-  const gameRef = useRef(game);
-  const canvasEngine = useCanvasEngine({ onUpdate: game.update });
-
-  const run = () => {
-    gameRef.current.init();
-    canvasEngine.run();
-  };
-
-  const stop = () => {
-    canvasEngine.stop();
-  };
-
-  const canvasRef = () => {
-    return canvasEngine.canvasRef;
-  };
-
-  return { run, stop, running: canvasEngine.running, canvasRef: canvasRef() }
-};
-
-const useCanvasEngine = ({ onUpdate }) => {
+const useCanvasEngine = game => {
   const framerate = 60;
   const [running, setRunning] = useState(false);
+  const gameRef = useRef(game);
   const animationFrame = useRef(0);
   const lastUpdatedAt = useRef(0);
   const canvasRef = useRef();
+  const squareSize = 20;
 
   const drawHelpers = ctx => {
     return {
       drawSquare: (x, y, color) => {
         ctx.fillStyle = color;
-        ctx.fillRect(x, y, 20, 20);
+        ctx.fillRect(x * squareSize, y * squareSize, squareSize, squareSize);
       },
       randomColor: () => {
         const r = 255*Math.random()|0;
@@ -72,13 +56,16 @@ const useCanvasEngine = ({ onUpdate }) => {
       const ctx = canvasRef.current.getContext('2d');
 
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      onUpdate(drawHelpers(ctx));
+      gameRef.current.update(drawHelpers(ctx));
       lastUpdatedAt.current = time;
     }
     animationFrame.current = requestAnimationFrame(animate);
   };
 
   const run = () => {
+    gameRef.current.init();
+    canvasRef.current.width = gameRef.current.maze.width * squareSize;
+    canvasRef.current.height = gameRef.current.maze.height * squareSize;
     animationFrame.current = requestAnimationFrame(animate);
     setRunning(true);
   };

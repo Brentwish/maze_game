@@ -15,10 +15,10 @@ const MazeGame = ({ ..._ }) => {
     running = true;
   };
 
-  const update = canvasEngine => {
+  const update = drawHelpers => {
     player.update();
-    maze.board.draw(canvasEngine);
-    player.draw(canvasEngine);
+    maze.board.draw(drawHelpers);
+    player.draw(drawHelpers);
   };
 
   const state = { client, player, maze, running };

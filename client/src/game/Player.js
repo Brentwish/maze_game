@@ -38,12 +38,12 @@ const Player = ({ ..._ }) => {
       case 'down':
         console.log('player move down');
         // Validate and set position
-        position.y -= 1;
+        position.y += 1;
         break;
       case 'up':
         console.log('player move up');
         // Validate and set position
-        position.y += 1;
+        position.y -= 1;
         break;
       case '':
         break;
@@ -58,7 +58,7 @@ const Player = ({ ..._ }) => {
   };
 
   const draw = (ce) => {
-    ce.drawSquare(position.x, position.y, 'red')
+    ce.drawSquare(position.x, position.y, ce.randomColor())
   };
 
   return { name, position, init, draw, update }
