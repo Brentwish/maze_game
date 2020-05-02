@@ -5,8 +5,10 @@ const PLAYER_KEY_DIRS = {
   w: 'up'
 };
 
-const Player = ({ ...props }) => {
-  const name = props.name || 'player_1';
+const Player = ({ ..._ }) => {
+  const name = _.name || 'player_1';
+  const position = { x: 0, y: 0 };
+  let currentMove = '';
 
   const init = () => {
     console.log('player init');
@@ -14,33 +16,52 @@ const Player = ({ ...props }) => {
   };
 
   const setMovementListeners = () => {
-    document.addEventListener('keypress', e => move(PLAYER_KEY_DIRS[e.key]));
+    document.addEventListener('keypress', e => setCurrentMove(PLAYER_KEY_DIRS[e.key]));
   };
 
-  const move = dir => {
-    switch(dir) {
+  const setCurrentMove = dir => {
+    currentMove = dir;
+  };
+
+  const move = () => {
+    switch (currentMove) {
       case 'left':
         console.log('player move left');
-        // Validate and set position
+        // Guard return Validate
+        position.x -= 1;
         break;
       case 'right':
         console.log('player move right');
         // Validate and set position
+        position.x += 1;
         break;
       case 'down':
         console.log('player move down');
         // Validate and set position
+        position.y -= 1;
         break;
       case 'up':
         console.log('player move up');
         // Validate and set position
+        position.y += 1;
+        break;
+      case '':
         break;
       default:
         console.log('invalid move');
     }
+    currentMove = '';
   };
 
-  return { name, init }
+  const update = () => {
+    move();
+  };
+
+  const draw = (ce) => {
+    ce.drawSquare(position.x, position.y, 'red')
+  };
+
+  return { name, position, init, draw, update }
 };
 
 export default Player;

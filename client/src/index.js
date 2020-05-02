@@ -12,7 +12,10 @@ const socket = io.connect(`http://localhost:${port}`);
 const props = {
   game: MazeGame({
     client: Client(socket),
-    playerProps: { name: 'brent' }
+    playerProps: { name: 'brent' },
+    mazeProps: {
+      boardProps: { width: 20, height: 20 }
+    }
   })
 };
 

@@ -1,39 +1,27 @@
 import Player from './Player.js';
+import Maze from './Maze.js';
 
-const randomColor = () => {
-  const r = 255*Math.random()|0;
-  const g = 255*Math.random()|0;
-  const b = 255*Math.random()|0;
-
-  return `rgb(${r},${g},${b})`;
-};
-
-const drawSquare = (ctx, x, y, color) => {
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, 20, 20);
-};
-
-const MazeGame = ({ ...props }) => {
-  const client = props.client;
-  let player = null;
+const MazeGame = ({ ..._ }) => {
+  const client = _.client;
+  const player = Player(_.playerProps);
+  const maze = Maze(_.mazeProps);
   let running = false;
 
   const init = () => {
     client.init();
     client.fetch('init_game', {});
-    player = Player(props.playerProps).init();
+    maze.init();
+    player.init();
     running = true;
   };
 
-  const update = (ctx) => {
-    const width = ctx.canvas.width;
-    const height = ctx.canvas.height;
-
-    ctx.clearRect(0, 0, width, height);
-    drawSquare(ctx, width * Math.random(), height * Math.random(), randomColor());
+  const update = canvasEngine => {
+    player.update();
+    maze.board.draw(canvasEngine);
+    player.draw(canvasEngine);
   };
 
-  const state = { client, player, running };
+  const state = { client, player, maze, running };
   const methods = { init, update };
   return { ...state, ...methods };
 };

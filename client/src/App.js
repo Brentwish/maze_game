@@ -42,18 +42,37 @@ const useGameEngine = game => {
   return { run, stop, running: canvasEngine.running, canvasRef: canvasRef() }
 };
 
-const useCanvasEngine = ({ onUpdate, ...props }) => {
-  const framerate = props.framerate || 60;
+const useCanvasEngine = ({ onUpdate }) => {
+  const framerate = 60;
   const [running, setRunning] = useState(false);
   const animationFrame = useRef(0);
   const lastUpdatedAt = useRef(0);
   const canvasRef = useRef();
 
+  const drawHelpers = ctx => {
+    return {
+      drawSquare: (x, y, color) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, 20, 20);
+      },
+      randomColor: () => {
+        const r = 255*Math.random()|0;
+        const g = 255*Math.random()|0;
+        const b = 255*Math.random()|0;
+
+        return `rgb(${r},${g},${b})`;
+      }
+    };
+  };
+
   const animate = time => {
     const deltaTime = time - lastUpdatedAt.current;
 
     if (deltaTime > 1000 / framerate) {
-      onUpdate(canvasRef.current.getContext('2d'));
+      const ctx = canvasRef.current.getContext('2d');
+
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      onUpdate(drawHelpers(ctx));
       lastUpdatedAt.current = time;
     }
     animationFrame.current = requestAnimationFrame(animate);
@@ -68,6 +87,7 @@ const useCanvasEngine = ({ onUpdate, ...props }) => {
     cancelAnimationFrame(animationFrame.current);
     setRunning(false);
   };
+
 
   return { run, stop, canvasRef, running };
 };
