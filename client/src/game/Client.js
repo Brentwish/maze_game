@@ -8,7 +8,13 @@ const Client = socket => {
     socket.emit(endpoint, opts);
   };
 
-  return { socket, init, fetch };
+  const joinGame = ({ ...opts }) => {
+    socket.emit('join_game', (res) => {
+      console.log(res);
+    });
+  };
+
+  return { socket, init, fetch, joinGame };
 };
 
 export default Client;

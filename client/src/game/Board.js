@@ -1,5 +1,3 @@
-import Player from "./Player";
-
 const Board = ({ ..._ }) => {
   const width = _.width;
   const height = _.height;

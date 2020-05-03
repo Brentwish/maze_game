@@ -4,12 +4,12 @@ import Maze from './Maze.js';
 const MazeGame = ({ ..._ }) => {
   const client = _.client;
   const player = Player(_.playerProps);
-  const maze = Maze(_.mazeProps);
+  const maze = Maze({});
   let running = false;
 
   const init = () => {
     client.init();
-    client.fetch('init_game', {});
+    client.joinGame({ name: player.name });
     maze.init();
     player.init();
     running = true;

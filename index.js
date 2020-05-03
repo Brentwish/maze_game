@@ -51,8 +51,9 @@ io.on('connection', socket => {
     currentGame.addPlayer(socket, data)
   });
 
-  socket.on('init_game', data => {
-    console.log('init_game: ', data);
+  socket.on('join_game', data => {
+    console.log('join_game: ', data);
+    return 'fack';
   });
 
   socket.on('disconnect', () => {

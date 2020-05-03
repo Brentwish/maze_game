@@ -13,9 +13,7 @@ const props = {
   game: MazeGame({
     client: Client(socket),
     playerProps: { name: 'brent' },
-    mazeProps: {
-      boardProps: { width: 25, height: 25 }
-    }
+    pixelsPerSquare: 20
   })
 };
 

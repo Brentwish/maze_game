@@ -31,13 +31,14 @@ const useCanvasEngine = game => {
   const animationFrame = useRef(0);
   const lastUpdatedAt = useRef(0);
   const canvasRef = useRef();
-  const squareSize = 20;
 
   const drawHelpers = ctx => {
+    const pps = gameRef.current.pixelsPerSquare;
+
     return {
       drawSquare: (x, y, color) => {
         ctx.fillStyle = color;
-        ctx.fillRect(x * squareSize, y * squareSize, squareSize, squareSize);
+        ctx.fillRect(x * pps, y * pps, pps, pps);
       },
       randomColor: () => {
         const r = 255*Math.random()|0;
@@ -64,8 +65,8 @@ const useCanvasEngine = game => {
 
   const run = () => {
     gameRef.current.init();
-    canvasRef.current.width = gameRef.current.maze.width * squareSize;
-    canvasRef.current.height = gameRef.current.maze.height * squareSize;
+    canvasRef.current.width = gameRef.current.maze.width * gameRef.current.pixelsPerSquare;
+    canvasRef.current.height = gameRef.current.maze.height * gameRef.current.pixelsPerSquare;
     animationFrame.current = requestAnimationFrame(animate);
     setRunning(true);
   };

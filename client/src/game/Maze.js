@@ -1,7 +1,7 @@
 import Board from './Board.js';
 
 const Maze = ({ ...props }) => {
-  const board = Board(props.boardProps);
+  const board = Board({});
   const width = board.width;
   const height = board.height;
 
