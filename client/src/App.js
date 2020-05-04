@@ -56,7 +56,7 @@ const useCanvasEngine = game => {
       const ctx = canvasRef.current.getContext('2d');
 
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      gameRef.current.update(drawHelpers(ctx));
+      gameRef.current.updateAndDraw(drawHelpers(ctx));
       lastUpdatedAt.current = time;
     }
     animationFrame.current = requestAnimationFrame(animate);

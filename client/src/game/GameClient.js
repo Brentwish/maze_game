@@ -2,11 +2,14 @@ const GameClient = ({ ..._ }) => {
   const socket = _.socket;
 
   const init = ({ ...props }, callback) => {
-    socket.emit('init_client', props, res => callback({ mazeData: res.maze_data }));
-  };
-
-  const fetch = (endpoint, opts) => {
-    socket.emit(endpoint, opts);
+    socket.emit('init_client', props, res => callback({
+      mazeData: res.maze_data,
+      entities: {
+        mainPlayerProps: {},
+        playersProps: res.players,
+        npcs: res.npcs
+      }
+    }));
   };
 
   const sendUpdate = (type, { ...opts }) => {
@@ -15,7 +18,7 @@ const GameClient = ({ ..._ }) => {
     });
   };
 
-  return { init, fetch, sendUpdate };
+  return { init, sendUpdate };
 };
 
 export default GameClient;
