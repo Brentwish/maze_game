@@ -24,17 +24,13 @@ const MazeGame = ({ ..._ }) => {
   };
 
   const addPlayer = playerProps => {
-    const player = Player();
-
-    player.init(playerProps);
-    players = [...players, player];
+    players = [...players, new Player(playerProps)];
   };
 
   const update = () => {
     players.forEach(player => {
       const update = player.update();
-      if (update) {
-        debugger;
+      if (update.move) {
         if (player.isMainPlayer) {
           client.sendUpdate('player_move', update);
         }
