@@ -15,7 +15,7 @@ const App = ({ game }) => {
   return (
     <div className="app">
       <div className="game_canvas_container">
-        <canvas id="game_canvas" ref={canvasEngine.canvasRef} />
+        <canvas id="game_canvas" ref={canvasEngine.canvasRef} width="500" height="500" />
       </div>
       <button type="button" onClick={canvasEngine.running ? stopGame : runGame}>
         { canvasEngine.running ? 'Stop' : 'Run' }
@@ -26,6 +26,7 @@ const App = ({ game }) => {
 
 const useCanvasEngine = game => {
   const framerate = 60;
+  const pps = 20;
   const [running, setRunning] = useState(false);
   const gameRef = useRef(game);
   const animationFrame = useRef(0);
@@ -33,8 +34,6 @@ const useCanvasEngine = game => {
   const canvasRef = useRef();
 
   const drawHelpers = ctx => {
-    const pps = gameRef.current.pixelsPerSquare;
-
     return {
       drawSquare: (x, y, color) => {
         ctx.fillStyle = color;
@@ -65,8 +64,6 @@ const useCanvasEngine = game => {
 
   const run = () => {
     gameRef.current.init();
-    canvasRef.current.width = gameRef.current.maze.width * gameRef.current.pixelsPerSquare;
-    canvasRef.current.height = gameRef.current.maze.height * gameRef.current.pixelsPerSquare;
     animationFrame.current = requestAnimationFrame(animate);
     setRunning(true);
   };
@@ -75,7 +72,6 @@ const useCanvasEngine = game => {
     cancelAnimationFrame(animationFrame.current);
     setRunning(false);
   };
-
 
   return { run, stop, canvasRef, running };
 };

@@ -36,24 +36,22 @@ const io = socketIo(server).listen(server);
 
 let currentGame = null;
 const mazeProps = {
-  width: 100,
-  height:100
+  width: 25,
+  height: 25
 };
 
 io.on('connection', socket => {
   console.log(`client connected: ${socket.id}`);
 
-  socket.on('init_client', data => {
+  socket.on('init_client', (data, callback) => {
     console.log('init_client: ', data);
-
-    if (currentGame === null) currentGame = MazeGame(mazeProps);
-
-    currentGame.addPlayer(socket, data)
+    callback({ maze_data: mazeProps });
   });
 
-  socket.on('join_game', data => {
-    console.log('join_game: ', data);
-    return 'fack';
+  socket.on('player_move', (data, callback) => {
+    console.log('player_move: ', data);
+    // Apply the move
+    callback({ valid: true });
   });
 
   socket.on('disconnect', () => {

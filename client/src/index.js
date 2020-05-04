@@ -4,22 +4,16 @@ import io from 'socket.io-client';
 import * as serviceWorker from './serviceWorker';
 import App from './App';
 import MazeGame from './game/MazeGame';
-import Client from './game/Client';
 
-const port = 8001;
-const socket = io.connect(`http://localhost:${port}`);
-
-const props = {
-  game: MazeGame({
-    client: Client(socket),
-    playerProps: { name: 'brent' },
-    pixelsPerSquare: 20
-  })
-};
+const socket = io.connect('http://localhost:8001');
+const game = MazeGame({
+  socket,
+  playerProps: { name: 'brent' }
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App { ...props } />
+    <App game={game} />
   </React.StrictMode>,
   document.getElementById('root')
 );

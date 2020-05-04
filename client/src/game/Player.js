@@ -24,6 +24,8 @@ const Player = ({ ..._ }) => {
   };
 
   const move = () => {
+    const update = { move: currentMove };
+
     switch (currentMove) {
       case 'left':
         console.log('player move left');
@@ -46,15 +48,18 @@ const Player = ({ ..._ }) => {
         position.y -= 1;
         break;
       case '':
-        break;
+        return false;
       default:
         console.log('invalid move');
+        return false;
     }
+
     currentMove = '';
+    return update;
   };
 
   const update = () => {
-    move();
+    return move();
   };
 
   const draw = (ce) => {

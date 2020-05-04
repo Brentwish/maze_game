@@ -1,22 +1,26 @@
 import Player from './Player.js';
 import Maze from './Maze.js';
+import GameClient from './GameClient.js';
 
 const MazeGame = ({ ..._ }) => {
-  const client = _.client;
+  const client = GameClient({ socket: _.socket });
   const player = Player(_.playerProps);
-  const maze = Maze({});
+  const maze = Maze();
   let running = false;
 
   const init = () => {
-    client.init();
-    client.joinGame({ name: player.name });
-    maze.init();
-    player.init();
-    running = true;
+    client.init({ name: player.name }, res => {
+      maze.init(res.mazeData);
+      player.init();
+      running = true;
+    });
   };
 
   const update = drawHelpers => {
-    player.update();
+    const update = player.update();
+    if (update) {
+      client.sendUpdate('player_move', update);
+    }
     maze.board.draw(drawHelpers);
     player.draw(drawHelpers);
   };

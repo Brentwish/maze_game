@@ -1,15 +1,16 @@
 import Board from './Board.js';
 
-const Maze = ({ ...props }) => {
-  const board = Board({});
-  const width = board.width;
-  const height = board.height;
+const Maze = () => {
+  const board = Board();
 
-  const init = () => {
-    board.init();
+  const init = ({ ..._ }) => {
+    board.init({
+      width: _.width,
+      height: _.height
+    });
   };
 
-  return { init, board, width, height };
+  return { init, board };
 };
 
 export default Maze;

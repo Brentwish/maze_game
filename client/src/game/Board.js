@@ -1,10 +1,11 @@
-const Board = ({ ..._ }) => {
-  const width = _.width;
-  const height = _.height;
-
+const Board = () => {
+  let width = 0;
+  let height = 0;
   let tiles = [];
 
-  const init = () => {
+  const init = ({ ..._ }) => {
+    width = _.width;
+    height = _.height;
     tiles = [...Array(width).keys()].map(w => {
       return [...Array(height).keys()].map(h => {
         return Tile({ x: w, y: h });
@@ -12,15 +13,15 @@ const Board = ({ ..._ }) => {
     })
   };
 
-  const draw = (ce) => {
-    tiles.forEach(row => {
-      row.forEach(tile => {
-        tile.draw(ce);
-      });
-    })
+  const draw = ce => {
+    flatTiles().forEach(tile => tile.draw(ce));
   };
 
-  return { tiles, width, height, init, draw };
+  const flatTiles = () => {
+    return tiles.reduce((acc, row) => acc.concat(row), []);
+  };
+
+  return { tiles, width, height, init, draw, flatTiles };
 };
 
 const Tile = ({ ..._ }) => {
