@@ -5,68 +5,54 @@ const PLAYER_KEY_DIRS = {
   w: 'up'
 };
 
-const Player = ({ ..._ }) => {
-  const name = _.name || 'player_1';
-  const position = { x: 0, y: 0 };
-  let currentMove = '';
+function Player({ ...playerProps }) {
+  this.name = playerProps.name || 'player';
+  this.position = { x: 0, y: 0 };
+  this.currentMove = '';
+  this.isMainPlayer = false;
 
-  const init = () => {
-    console.log('player init');
-    setMovementListeners();
-  };
+  if (playerProps.mainPlayer) {
+    this.isMainPlayer = true;
+    document.addEventListener('keypress', e => this.currentMove = PLAYER_KEY_DIRS[e.key]);
+  }
+}
 
-  const setMovementListeners = () => {
-    document.addEventListener('keypress', e => setCurrentMove(PLAYER_KEY_DIRS[e.key]));
-  };
+Player.prototype.move = function() {
+  const update = { move: this.currentMove };
+  const newPosition = this.position;
 
-  const setCurrentMove = dir => {
-    currentMove = dir;
-  };
+  switch (this.currentMove) {
+    case 'left':
+      newPosition.x -= 1;
+      break;
+    case 'right':
+      newPosition.x += 1;
+      break;
+    case 'down':
+      newPosition.y += 1;
+      break;
+    case 'up':
+      newPosition.y -= 1;
+      break;
+    case '':
+      return false;
+    default:
+      console.log('invalid move');
+      return false;
+  }
 
-  const move = () => {
-    const update = { move: currentMove };
+  console.log(`player move ${this.currentMove}`);
+  this.currentMove = '';
+  this.position = newPosition;
+  return update;
+};
 
-    switch (currentMove) {
-      case 'left':
-        console.log('player move left');
-        // Guard return Validate
-        position.x -= 1;
-        break;
-      case 'right':
-        console.log('player move right');
-        // Validate and set position
-        position.x += 1;
-        break;
-      case 'down':
-        console.log('player move down');
-        // Validate and set position
-        position.y += 1;
-        break;
-      case 'up':
-        console.log('player move up');
-        // Validate and set position
-        position.y -= 1;
-        break;
-      case '':
-        return false;
-      default:
-        console.log('invalid move');
-        return false;
-    }
+Player.prototype.update = function() {
+  return { move: this.move(), draw: this.draw.bind(this) };
+};
 
-    currentMove = '';
-    return update;
-  };
-
-  const update = () => {
-    return move();
-  };
-
-  const draw = (ce) => {
-    ce.drawSquare(position.x, position.y, ce.randomColor())
-  };
-
-  return { name, position, init, draw, update }
+Player.prototype.draw = function(ce) {
+  ce.drawSquare(this.position.x, this.position.y, ce.randomColor())
 };
 
 export default Player;

@@ -34,18 +34,20 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server).listen(server);
 
-let currentGame = null;
 const mazeProps = {
   width: 25,
   height: 25
 };
+
+const players = [];
+const npcs = [];
 
 io.on('connection', socket => {
   console.log(`client connected: ${socket.id}`);
 
   socket.on('init_client', (data, callback) => {
     console.log('init_client: ', data);
-    callback({ maze_data: mazeProps });
+    callback({ maze_data: mazeProps, players, npcs });
   });
 
   socket.on('player_move', (data, callback) => {

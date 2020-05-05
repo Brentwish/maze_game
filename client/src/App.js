@@ -26,7 +26,7 @@ const App = ({ game }) => {
 
 const useCanvasEngine = game => {
   const framerate = 60;
-  const pps = 20;
+  const pixelsPerSquare = 20;
   const [running, setRunning] = useState(false);
   const gameRef = useRef(game);
   const animationFrame = useRef(0);
@@ -37,7 +37,7 @@ const useCanvasEngine = game => {
     return {
       drawSquare: (x, y, color) => {
         ctx.fillStyle = color;
-        ctx.fillRect(x * pps, y * pps, pps, pps);
+        ctx.fillRect(x * pixelsPerSquare, y * pixelsPerSquare, pixelsPerSquare, pixelsPerSquare);
       },
       randomColor: () => {
         const r = 255*Math.random()|0;
@@ -56,14 +56,13 @@ const useCanvasEngine = game => {
       const ctx = canvasRef.current.getContext('2d');
 
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      gameRef.current.update(drawHelpers(ctx));
+      gameRef.current.updateAndDraw(drawHelpers(ctx));
       lastUpdatedAt.current = time;
     }
     animationFrame.current = requestAnimationFrame(animate);
   };
 
   const run = () => {
-    gameRef.current.init();
     animationFrame.current = requestAnimationFrame(animate);
     setRunning(true);
   };
