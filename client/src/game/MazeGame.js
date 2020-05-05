@@ -3,7 +3,7 @@ import Maze from './Maze.js';
 import GameClient from './GameClient.js';
 
 function MazeGame({ ..._ }) {
-  this.maze = Maze();
+  this.maze = null;
   this.updates = [];
   this.players = [];
   this.running = false;
@@ -15,6 +15,9 @@ function MazeGame({ ..._ }) {
 }
 
 MazeGame.prototype.setInitialState = function(res) {
+  // The game is running once it gets a response from the server
+  this.running = true;
+
   // init main player with initial player data from server
   this.addPlayer({ mainPlayer: true, ...res.entityProps.mainPlayerProps });
 
@@ -22,8 +25,7 @@ MazeGame.prototype.setInitialState = function(res) {
   res.entityProps.playersProps.forEach(playerProps => this.addPlayer(playerProps));
 
   // init the maze
-  this.maze.init(res.mazeProps);
-  this.running = true;
+  this.maze = new Maze(res.mazeProps);
 };
 
 MazeGame.prototype.addPlayer = function(playerProps) {

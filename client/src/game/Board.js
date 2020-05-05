@@ -1,39 +1,21 @@
-const Board = () => {
-  let width = 0;
-  let height = 0;
-  let tiles = [];
+import Tile from './Tile.js';
 
-  const init = ({ ..._ }) => {
-    width = _.width;
-    height = _.height;
-    tiles = [...Array(width).keys()].map(w => {
-      return [...Array(height).keys()].map(h => {
-        return Tile({ x: w, y: h });
-      });
-    })
-  };
+function Board({ ..._ }) {
+  this.width = _.width;
+  this.height = _.height;
+  this.tiles = [...Array(this.width).keys()].map(w => {
+    return [...Array(this.height).keys()].map(h => {
+      return new Tile({ x: w, y: h });
+    });
+  });
+}
 
-  const draw = ce => {
-    flatTiles().forEach(tile => tile.draw(ce));
-  };
-
-  const flatTiles = () => {
-    return tiles.reduce((acc, row) => acc.concat(row), []);
-  };
-
-  return { tiles, width, height, init, draw, flatTiles };
+Board.prototype.flatTiles = function() {
+  return this.tiles.reduce((acc, row) => acc.concat(row), []);
 };
 
-const Tile = ({ ..._ }) => {
-  const x = _.x;
-  const y = _.y;
-  const color = _.color || 'grey';
-
-  const draw = (ce) => {
-    ce.drawSquare(x, y, color);
-  };
-
-  return { draw };
+Board.prototype.draw = function(ce) {
+  this.flatTiles().forEach(tile => tile.draw(ce));
 };
 
 export default Board;
