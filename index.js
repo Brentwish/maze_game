@@ -1,30 +1,3 @@
-const Player = ({ props }) => {
-  return { props };
-};
-
-const MazeGame = ({ ...props }) => {
-  let players = [];
-
-  const addPlayer = (socket, props) => {
-    const player = Player(props);
-    players = [...players, player];
-
-    socket.on('move', data => {
-      const move = processMoveData(data);
-
-      if (move.isValid()) {
-        player.move(move);
-      }
-    });
-
-    return true;
-  };
-
-  const processMoveData = () => { return { isValid: () => true }; };
-
-  return { props, addPlayer };
-};
-
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -39,25 +12,31 @@ const mazeProps = {
   height: 25
 };
 
-const players = [];
+const players = {};
 const npcs = [];
 
 io.on('connection', socket => {
   console.log(`client connected: ${socket.id}`);
 
   socket.on('init_client', (data, callback) => {
-    console.log('init_client: ', data);
-    callback({ maze_data: mazeProps, players, npcs });
+    console.log('init_client: ', socket.id);
+    if (socket.id in players) return;
+    players[socket.id] = { id: Object.keys(players).length };
+    callback({ maze_data: mazeProps, players: Object.values(players), npcs });
   });
 
   socket.on('player_move', (data, callback) => {
     console.log('player_move: ', data);
     // Apply the move
+    socket.broadcast.emit('player_move', data);
     callback({ valid: true });
   });
 
   socket.on('disconnect', () => {
     console.log(`client disconnected: ${socket.id}`);
+    delete players[socket.id];
+    console.log('players left:');
+    console.log(players);
   });
 });
 

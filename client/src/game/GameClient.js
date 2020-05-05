@@ -2,6 +2,8 @@ function GameClient({ ..._ }) {
   this.socket = _.socket;
 
   // Set up listeners
+  this.socket.on('player_move', _.onPlayerMove);
+  this.socket.on('new_player', _.addPlayer);
 
   // Fetch the initial data for the game
   this.socket.emit('init_client', {}, res => _.setInitialGameData({

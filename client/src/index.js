@@ -5,7 +5,7 @@ import * as serviceWorker from './serviceWorker';
 import App from './App';
 import MazeGame from './game/MazeGame';
 
-const socket = io.connect('http://localhost:8001');
+const socket = io.connect('http://192.168.128.105:8001');
 const game = new MazeGame({
   socket,
   playerProps: { name: 'brent' }
