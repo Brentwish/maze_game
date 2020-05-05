@@ -2,54 +2,56 @@ import Player from './Player.js';
 import Maze from './Maze.js';
 import GameClient from './GameClient.js';
 
-const MazeGame = ({ ..._ }) => {
-  const client = GameClient({socket: _.socket});
-  const maze = Maze();
-  let updates = [];
-  let players = [];
-  let running = false;
+function MazeGame({ ..._ }) {
+  this.maze = Maze();
+  this.updates = [];
+  this.players = [];
+  this.running = false;
 
-  const init = () => {
-    client.init({}, res => {
-      // init main player with initial player data from server
-      addPlayer({ mainPlayer: true, ...res.entities.mainPlayerProps });
+  this.client = new GameClient({
+    socket: _.socket,
+    setInitialGameData: this.setInitialState.bind(this)
+  });
+}
 
-      // init each other player in the game instance
-      res.entities.playersProps.forEach(playerProps => addPlayer(playerProps));
+MazeGame.prototype.setInitialState = function(res) {
+  // init main player with initial player data from server
+  this.addPlayer({ mainPlayer: true, ...res.entityProps.mainPlayerProps });
 
-      // init the maze
-      maze.init(res.mazeData);
-      running = true;
-    });
-  };
+  // init each other player in the game instance
+  res.entityProps.playersProps.forEach(playerProps => this.addPlayer(playerProps));
 
-  const addPlayer = playerProps => {
-    players = [...players, new Player(playerProps)];
-  };
+  // init the maze
+  this.maze.init(res.mazeProps);
+  this.running = true;
+};
 
-  const update = () => {
-    players.forEach(player => {
-      const update = player.update();
-      if (update.move) {
-        if (player.isMainPlayer) {
-          client.sendUpdate('player_move', update);
-        }
-        updates = [...updates, update];
+MazeGame.prototype.addPlayer = function(playerProps) {
+  this.players = [...this.players, new Player(playerProps)];
+};
+
+MazeGame.prototype.update = function() {
+  this.players.forEach(player => {
+    const update = player.update();
+    if (update.move) {
+      if (player.isMainPlayer) {
+        this.client.sendUpdate('player_move', update);
       }
-    });
-  };
+      this.updates = [...this.updates, update];
+    }
+  });
+};
 
-  const draw = drawHelpers => {
-    maze.board.draw(drawHelpers);
-    updates.reduce((_, update) => update.draw(drawHelpers), []);
-  };
+MazeGame.prototype.draw = function(drawHelpers) {
+  this.maze.board.draw(drawHelpers);
+  this.updates.reduce((_, update) => update.draw(drawHelpers), []);
+};
 
-  const updateAndDraw = drawHelpers => {
-    update();
-    draw(drawHelpers);
-  };
-
-  return { init, updateAndDraw };
+MazeGame.prototype.updateAndDraw = function(drawHelpers) {
+  if (this.running) {
+    this.update();
+    this.draw(drawHelpers);
+  }
 };
 
 export default MazeGame;

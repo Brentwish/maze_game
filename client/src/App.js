@@ -63,7 +63,6 @@ const useCanvasEngine = game => {
   };
 
   const run = () => {
-    gameRef.current.init();
     animationFrame.current = requestAnimationFrame(animate);
     setRunning(true);
   };

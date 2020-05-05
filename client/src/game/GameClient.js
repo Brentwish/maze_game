@@ -1,24 +1,23 @@
-const GameClient = ({ ..._ }) => {
-  const socket = _.socket;
+function GameClient({ ..._ }) {
+  this.socket = _.socket;
 
-  const init = ({ ...props }, callback) => {
-    socket.emit('init_client', props, res => callback({
-      mazeData: res.maze_data,
-      entities: {
-        mainPlayerProps: {},
-        playersProps: res.players,
-        npcs: res.npcs
-      }
-    }));
-  };
+  // Set up listeners
 
-  const sendUpdate = (type, { ...opts }) => {
-    socket.emit(type, opts, res => {
-      if (typeof opts.callback === 'function') opts.callback(res);
-    });
-  };
+  // Fetch the initial data for the game
+  this.socket.emit('init_client', {}, res => _.setInitialGameData({
+    mazeProps: res.maze_data,
+    entityProps: {
+      mainPlayerProps: {},
+      playersProps: res.players,
+      npcs: res.npcs
+    }
+  }));
+}
 
-  return { init, sendUpdate };
+GameClient.prototype.sendUpdate = function(type, { ...opts }) {
+  this.socket.emit(type, opts, res => {
+    if (typeof opts.callback === 'function') opts.callback(res);
+  });
 };
 
 export default GameClient;
